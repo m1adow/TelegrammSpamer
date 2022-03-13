@@ -68,10 +68,11 @@
             // 
             // textBoxDelay
             // 
-            this.textBoxDelay.Location = new System.Drawing.Point(383, 22);
+            this.textBoxDelay.Location = new System.Drawing.Point(378, 22);
             this.textBoxDelay.Name = "textBoxDelay";
             this.textBoxDelay.Size = new System.Drawing.Size(100, 23);
             this.textBoxDelay.TabIndex = 4;
+            this.textBoxDelay.Text = "1";
             // 
             // TelegramSpamer
             // 

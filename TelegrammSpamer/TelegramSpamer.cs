@@ -1,11 +1,12 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using TelegrammSpamer.Models;
 
 namespace TelegrammSpamer
 {
     public partial class TelegramSpamer : Form
     {
-        WebDriver? _webDriver;
+        IWebDriver? _webDriver;
 
         public TelegramSpamer()
         {
@@ -16,7 +17,7 @@ namespace TelegrammSpamer
         {
             _webDriver = new ChromeDriver(); //open a browser
 
-            _webDriver.Navigate().GoToUrl(@"https://web.telegram.org/"); //open telegram page
+            _webDriver.Navigate().GoToUrl(@"https://web.telegram.org/z/"); //open telegram page
         }
 
         private void buttonSend_Click(object sender, EventArgs e) => SendMessage();
@@ -24,15 +25,22 @@ namespace TelegrammSpamer
         private void SendMessage()
         {
             //if text boxes are empty exit from method
-            /*if (IsTextBoxesEmpty())
+            if (IsTextBoxesEmpty())
             {
                 MessageBox.Show("Text boxes must be filled", "Error", MessageBoxButtons.OK);
                 return;
-            }*/
+            }
 
             try
             {
-                _webDriver.FindElement(By.XPath($@"//span[contains(text(), '{textBoxName.Text}')]")).Click();
+                _webDriver.FindElement(Roots.GetRecepient(_webDriver, textBoxName.Text)).Click();
+
+                for (int i = 0; i < int.Parse(textBoxCount.Text); i++)
+                {
+                    _webDriver.FindElement(Roots.SendField).SendKeys(textBoxMessage.Text);
+                    _webDriver.FindElement(Roots.SendButton).Click();
+                    Thread.Sleep(TimeSpan.FromSeconds(double.Parse(textBoxDelay.Text)));
+                }
             }
             catch (Exception exc)
             {
@@ -42,8 +50,8 @@ namespace TelegrammSpamer
 
         private bool IsTextBoxesEmpty()
         {
-            if (textBoxName.Text is null || textBoxMessage.Text is null || textBoxDelay.Text is null || textBoxCount.Text is null) return false;
-            return true;    
+            if (textBoxName.Text is null || textBoxMessage.Text is null || textBoxDelay.Text is null || textBoxCount.Text is null) return true;
+            return false;    
         }
     }
 }
