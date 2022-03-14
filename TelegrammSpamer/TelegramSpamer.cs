@@ -15,6 +15,8 @@ namespace TelegrammSpamer
 
         private void TelegramSpamer_Load(object sender, EventArgs e)
         {
+            MessageBox.Show("First of all login in to Telegram account", "WARNING!", MessageBoxButtons.OK);
+
             _webDriver = new ChromeDriver(); //open a browser
 
             _webDriver.Navigate().GoToUrl(@"https://web.telegram.org/z/"); //open telegram page
@@ -31,16 +33,16 @@ namespace TelegrammSpamer
                 return;
             }
 
+            //if text boxes wtih count and delay have letters exit from method
+            if (IsTextBoxesContainLetters())
+            {
+                MessageBox.Show("Text boxes count and delay must have only digits", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
             try
             {
-                _webDriver.FindElement(Roots.GetRecepient(_webDriver, textBoxName.Text)).Click();
-
-                for (int i = 0; i < int.Parse(textBoxCount.Text); i++)
-                {
-                    _webDriver.FindElement(Roots.SendField).SendKeys(textBoxMessage.Text);
-                    _webDriver.FindElement(Roots.SendButton).Click();
-                    Thread.Sleep(TimeSpan.FromSeconds(double.Parse(textBoxDelay.Text)));
-                }
+                SendMessagesAsync(_webDriver);
             }
             catch (Exception exc)
             {
@@ -52,6 +54,27 @@ namespace TelegrammSpamer
         {
             if (textBoxName.Text is null || textBoxMessage.Text is null || textBoxDelay.Text is null || textBoxCount.Text is null) return true;
             return false;    
+        }
+
+        private bool IsTextBoxesContainLetters()
+        {
+            if (textBoxCount.Text.Any(c => char.IsLetter(c)) || textBoxDelay.Text.Any(c => char.IsLetter(c))) return true;
+            return false;
+        }
+
+        private async void SendMessagesAsync(IWebDriver webDriver)
+        {
+            webDriver.FindElement(Roots.GetRecepient(webDriver, textBoxName.Text)).Click();
+
+            await Task.Run(() =>
+            {
+                for (int i = 0; i < int.Parse(textBoxCount.Text); i++)
+                {
+                    webDriver.FindElement(Roots.SendField).SendKeys(textBoxMessage.Text);
+                    webDriver.FindElement(Roots.SendButton).Click();
+                    Thread.Sleep(TimeSpan.FromSeconds(double.Parse(textBoxDelay.Text)));
+                }
+            });
         }
     }
 }
