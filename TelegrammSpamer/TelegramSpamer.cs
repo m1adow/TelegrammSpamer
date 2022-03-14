@@ -22,9 +22,9 @@ namespace TelegrammSpamer
             _webDriver.Navigate().GoToUrl(@"https://web.telegram.org/z/"); //open telegram page
         }
 
-        private void buttonSend_Click(object sender, EventArgs e) => SendMessage();
+        private void buttonSend_Click(object sender, EventArgs e) => MakeRequest();
 
-        private void SendMessage()
+        private void MakeRequest()
         {
             //if text boxes are empty exit from method
             if (IsTextBoxesEmpty())
